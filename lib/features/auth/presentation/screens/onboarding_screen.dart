@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/primary_button.dart';
@@ -10,6 +11,14 @@ class OnboardingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final screenH = media.size.height;
+    final bottomInset = media.viewInsets.bottom;
+
+    final double topSpace = math.min(80.0, screenH * 0.10);
+    final double betweenLogoAndText = math.min(48.0, screenH * 0.06);
+    final double betweenTextAndButton = math.min(48.0, screenH * 0.06);
+
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -20,39 +29,56 @@ class OnboardingScreen extends StatelessWidget {
               colors: [AppColors.white, AppColors.white, AppColors.inputBg],
             ),
           ),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              children: [
-                const SizedBox(height: 80),
-                _buildLogo(),
-                const SizedBox(height: 48),
-                _buildBrandMessaging(),
-                const SizedBox(height: 48),
-                PrimaryButton(
-                  text: 'Get Started',
-                  icon: const Icon(
-                    Icons.arrow_forward,
-                    size: 20,
-                    color: AppColors.white,
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const SignInScreen(),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: EdgeInsets.fromLTRB(24, 0, 24, bottomInset + 16),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 520),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                      child: IntrinsicHeight(
+                        child: Column(
+                          children: [
+                            SizedBox(height: topSpace),
+                            _buildLogo(),
+                            SizedBox(height: betweenLogoAndText),
+                            _buildBrandMessaging(),
+                            const Spacer(),
+                            SizedBox(height: betweenTextAndButton),
+                            PrimaryButton(
+                              text: 'Get Started',
+                              icon: const Icon(
+                                Icons.arrow_forward,
+                                size: 20,
+                                color: AppColors.white,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => const SignInScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                            const Spacer(),
+                            const SizedBox(height: 16),
+                            const AuthFooter(
+                              mainText: 'By continuing, you agree to our',
+                              linkText: 'Terms & Privacy Policy',
+                              onLinkTap: _handleTermsTap,
+                            ),
+                          ],
+                        ),
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 32),
-                const AuthFooter(
-                  mainText: 'By continuing, you agree to our',
-                  linkText: 'Terms & Privacy Policy',
-                  onLinkTap: _handleTermsTap,
-                ),
-                const SizedBox(height: 40),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
