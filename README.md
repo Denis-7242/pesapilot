@@ -55,3 +55,4 @@ Key structure:
    ```
 
 The default entrypoint loads the **Onboarding** screen and lets you navigate through **Sign In** and **Sign Up**.
+The ** authentication is yet to be implemented.
